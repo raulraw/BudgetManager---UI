@@ -1,0 +1,93 @@
+/* home.css */
+.home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: #f8f9fa;
+  font-family: 'Roboto', sans-serif;
+  padding: 3rem 2rem;
+  min-height: 100vh;
+  box-sizing: border-box; /* pentru a evita depășirea înălțimii */
+}
+
+h1 {
+  font-size: 3rem;
+  color: #333;
+  margin-bottom: 2rem;
+}
+
+button.logout-button {
+  padding: 0.7rem 1.5rem; /* Mărim puțin padding-ul pentru a-l face mai mare */
+  font-size: 1rem; /* Creștem puțin font-size pentru a-l face mai vizibil */
+  width: auto; /* Lăsăm butonul să se ajusteze la conținut */
+  min-width: 120px; /* Setăm o lățime minimă mai mare pentru a face butonul mai vizibil */
+  text-align: center; /* Centrarea textului */
+  border-radius: 5px;
+}
+
+button.logout-button:hover {
+  background: #d9534f; /* Schimbăm culoarea pe hover pentru a da un efect mai clar */
+}
+
+.expenses-chart {
+  width: 100%;
+  max-width: 600px;
+  margin-top: 2rem;
+  text-align: center;
+  position: relative;
+  height: 400px; /* Setăm o înălțime fixă pentru a evita întinderea */
+  min-height: 300px; /* Asigură că există un minim de înălțime */
+}
+
+.expenses-chart p {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.total-expenses {
+  margin-top: 2rem; /* Creștem mai mult margin-top pentru a face loc între chart și Total Expenses */
+  padding: 1rem; /* Mai mult padding pentru a da o aerisire mai bună */
+  background-color: #fff; /* Fundal alb pentru contrast */
+  border-radius: 8px; /* Colțuri rotunjite */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Umbră subtilă */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.1rem;
+  z-index: 1; /* Asigurăm că secțiunea de Total Expenses rămâne vizibilă */
+  position: relative;
+}
+
+.total-expenses p {
+  margin: 0;
+  color: #333;
+}
+
+.expense-details {
+  width: 100%;
+  max-width: 600px;
+  margin-top: 4rem; /* Creștem distanța față de grafic */
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.expense-item {
+  background-color: #f9f9f9;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.expense-item p {
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.expense-item strong {
+  color: #ff6347;
+}

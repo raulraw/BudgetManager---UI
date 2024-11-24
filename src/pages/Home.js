@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Pie } from 'react-chartjs-2';
+import React, { useEffect, useState, useRef } from 'react';
+import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale } from 'chart.js';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import '../styles/App.css'; // Importă stilul CSS pentru Home
+import '../styles/Home.css';
 
 // Înregistrăm componentele necesare din ChartJS
 ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale);
@@ -20,45 +20,42 @@ const Home = () => {
     ],
   });
   const [totalExpenses, setTotalExpenses] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const chartRef = useRef(null); // Ref pentru grafic
   const navigate = useNavigate();
-  const userId = localStorage.getItem('userId'); // Preia userId din localStorage
+  const userId = localStorage.getItem('userId');
 
-  // Funcția pentru a obține cheltuielile utilizatorului
   useEffect(() => {
     if (!userId) {
-      navigate('/login'); // Navighează spre login dacă nu există userId
+      navigate('/login');
     } else {
       axios
         .get(`http://localhost:8080/api/expenses/user/${userId}/details`)
         .then((response) => {
-          const categories = response.data;
-
-          if (categories && Object.keys(categories).length > 0) {
+          if (response.data && Object.keys(response.data).length > 0) {
+            const categories = response.data;
             const labels = Object.keys(categories);
 
-            // Calculăm suma totală a cheltuielilor
             const data = labels.map((category) =>
-              categories[category].reduce((acc, expense) => acc + expense.amount, 0)
+              Array.isArray(categories[category])
+                ? categories[category].reduce((acc, expense) => acc + expense.amount, 0)
+                : categories[category] || 0
             );
 
             const total = data.reduce((acc, val) => acc + val, 0);
             setTotalExpenses(total);
 
-            // Actualizăm datele graficului
             setChartData({
               labels: labels,
               datasets: [
                 {
-                  data: data.map((amount) => ((amount / total) * 100).toFixed(1)),
+                  data: data,
                   backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#FF9F40'],
                 },
               ],
             });
-
-            // Actualizăm cheltuielile
             setExpenses(categories);
           } else {
-            // Dacă nu sunt cheltuieli
             setExpenses({});
             setTotalExpenses(0);
             setChartData({
@@ -78,10 +75,25 @@ const Home = () => {
     }
   }, [userId, navigate]);
 
+  const handleChartClick = (event) => {
+    const chart = chartRef.current;
+    if (chart) {
+      // Folosim getElementsAtEventForMode pentru compatibilitate
+      const elements = chart.getElementsAtEventForMode(event, 'nearest', { intersect: true });
+
+      if (elements.length > 0) {
+        const clickedIndex = elements[0].index;
+        const clickedCategory = chartData.labels[clickedIndex];
+        setSelectedCategory(clickedCategory);
+      }
+    }
+  };
+
   return (
     <div className="home-container">
       <h1>Welcome to Your Budget</h1>
       <button
+      className="logout-button"
         onClick={() => {
           localStorage.removeItem('userId');
           navigate('/login');
@@ -90,48 +102,55 @@ const Home = () => {
         Logout
       </button>
 
-      {Object.keys(expenses).length === 0 ? (
-        <div className="no-expenses">
-          <p>You have no expenses.</p>
-        </div>
-      ) : (
-        <div className="expenses-chart">
-          <p>Expense Distribution</p>
-          <Pie data={chartData} options={{ responsive: true, maintainAspectRatio: false }} />
-        </div>
-      )}
+      <div className="expenses-chart">
+        <p>Expense Distribution</p>
+        <Doughnut
+          ref={chartRef}
+          data={chartData}
+          options={{
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    const value = context.raw;
+                    return `${context.label}: ${value.toFixed(2)} $`;
+                  },
+                },
+              },
+            },
+            onClick: handleChartClick, // Evenimentul de clic
+          }}
+        />
+      </div>
 
-      {Object.keys(expenses).length > 0 && (
+      {selectedCategory && (
         <div className="expense-details">
-          <h2>Expense Details</h2>
-          {Object.keys(expenses).map((category, index) => (
-            <div key={index} className="category-details">
-              <h3>{category}</h3>
-              {Array.isArray(expenses[category]) && expenses[category].length > 0 ? (
-                <div className="expense-list">
-                  {expenses[category].map((expense, i) => (
-                    <div key={i} className="expense-item">
-                      <p>
-                        <strong>{expense.name}</strong> on{' '}
-                        <em>{new Date(expense.date).toLocaleDateString()}</em> cost:{' '}
-                        <strong>${expense.amount.toFixed(2)}</strong>
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p>No expenses found in this category.</p>
-              )}
-            </div>
-          ))}
+          <h2>Details for {selectedCategory}</h2>
+          {expenses[selectedCategory]?.length > 0 ? (
+            expenses[selectedCategory].map((expense, index) => (
+              <div key={index} className="expense-item">
+                <p>
+                  <strong>Name:</strong> {expense.name}
+                </p>
+                <p>
+                  <strong>Date:</strong> {new Date(expense.date).toLocaleDateString()}
+                </p>
+                <p>
+                  <strong>Amount:</strong> {expense.amount.toFixed(2)} $
+                </p>
+              </div>
+            ))
+          ) : (
+            <p>No expenses found in this category.</p>
+          )}
         </div>
       )}
 
-      {Object.keys(expenses).length > 0 && (
-        <div className="total-expenses">
-          <p>Total Expenses: {totalExpenses.toFixed(2)} $</p>
-        </div>
-      )}
+      <div className="total-expenses">
+        <p>Total Expenses: {totalExpenses.toFixed(2)} $</p>
+      </div>
     </div>
   );
 };

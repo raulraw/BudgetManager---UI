@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import "../styles/Register.css"; // Importăm fișierul CSS personalizat
 
 const Register = () => {
   const [user, setUser] = useState({
@@ -28,10 +29,10 @@ const Register = () => {
   };
 
   return (
-    <div>
-      <h2>Register</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
+    <div className="register-container">
+      <h2>Create an Account</h2>
+      <form onSubmit={handleSubmit} className="register-form">
+        <div className="form-group">
           <label>Username:</label>
           <input
             type="text"
@@ -39,9 +40,10 @@ const Register = () => {
             value={user.username}
             onChange={handleChange}
             required
+            className="input-field"
           />
         </div>
-        <div>
+        <div className="form-group">
           <label>Email:</label>
           <input
             type="email"
@@ -49,9 +51,10 @@ const Register = () => {
             value={user.email}
             onChange={handleChange}
             required
+            className="input-field"
           />
         </div>
-        <div>
+        <div className="form-group">
           <label>Password:</label>
           <input
             type="password"
@@ -59,9 +62,10 @@ const Register = () => {
             value={user.password}
             onChange={handleChange}
             required
+            className="input-field"
           />
         </div>
-        <button type="submit">Register</button>
+        <button type="submit" className="submit-button">Register</button>
       </form>
     </div>
   );
