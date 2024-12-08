@@ -32,7 +32,7 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Presupunem că API-ul returnează userId și un token
+      
         const { userId, token } = data;
 
         // Salvezi userId și token în localStorage
@@ -40,7 +40,6 @@ const Login = () => {
         localStorage.setItem('token', token);
 
         console.log('Autentificare reușită:', userId);
-        // Redirecționează utilizatorul către pagina Home
         window.location.href = '/home'; // Redirecționare către pagina Home
       } else {
         setError(data.message || 'A apărut o eroare!');
