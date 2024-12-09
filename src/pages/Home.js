@@ -1,15 +1,17 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Doughnut } from 'react-chartjs-2';
-import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale } from 'chart.js';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { FaCog } from 'react-icons/fa';
 import '../styles/Home.css';
-
-// Înregistrăm componentele necesare din ChartJS
-ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale);
+import BudgetForm from '../components/BudgetForm';
+import EditNameForm from '../components/EditNameForm';
+import ExpenseChart from '../components/ExpenseChart'; // Importăm noua componentă pentru grafic
 
 const Home = () => {
+  const [showSettings, setShowSettings] = useState(false);
+  const [expanded, setExpanded] = useState(null);
   const [expenses, setExpenses] = useState({});
+  const [fullName, setFullName] = useState(localStorage.getItem('fullName') || '');
   const [chartData, setChartData] = useState({
     labels: ['No Expenses'],
     datasets: [
@@ -21,7 +23,7 @@ const Home = () => {
   });
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const chartRef = useRef(null); // Ref pentru grafic
+
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
 
@@ -75,56 +77,77 @@ const Home = () => {
     }
   }, [userId, navigate]);
 
-  const handleChartClick = (event) => {
-    const chart = chartRef.current;
-    if (chart) {
-      // Folosim getElementsAtEventForMode pentru compatibilitate
-      const elements = chart.getElementsAtEventForMode(event, 'nearest', { intersect: true });
+  const toggleAccordion = (section) => {
+    setExpanded(expanded === section ? null : section);
+  };
 
-      if (elements.length > 0) {
-        const clickedIndex = elements[0].index;
-        const clickedCategory = chartData.labels[clickedIndex];
-        setSelectedCategory(clickedCategory);
-      }
+  const handleSave = (updatedName) => {
+    console.log('Updated user name:', updatedName);
+  
+    localStorage.setItem('fullName', updatedName);
+    setFullName(updatedName);
+    setExpanded(null);
+  };
+
+  const handleChartClick = (clickedCategory) => {
+    console.log('Category clicked:', clickedCategory);
+    if (clickedCategory && expenses[clickedCategory]) {
+      setSelectedCategory(clickedCategory);
     }
   };
 
   return (
     <div className="home-container">
-      <h1>Welcome to Your Budget</h1>
-      <button
-      className="logout-button"
-        onClick={() => {
-          localStorage.removeItem('userId');
-          navigate('/login');
-        }}
-      >
-        Logout
-      </button>
+      <h1>
+        Welcome, {fullName ? fullName : 'User'}
+        <FaCog className="settings-icon" onClick={() => setShowSettings(true)} />
+      </h1>
 
-      <div className="expenses-chart">
-        <p>Expense Distribution</p>
-        <Doughnut
-          ref={chartRef}
-          data={chartData}
-          options={{
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              tooltip: {
-                callbacks: {
-                  label: function (context) {
-                    const value = context.raw;
-                    return `${context.label}: ${value.toFixed(2)} $`;
-                  },
-                },
-              },
-            },
-            onClick: handleChartClick, // Evenimentul de clic
-          }}
-        />
-      </div>
+      {/* Meniu de setări */}
+      {showSettings && (
+        <div className="settings-modal">
+          <div className="settings-content">
+            <span className="close-icon" onClick={() => setShowSettings(false)}>
+              &times;
+            </span>
+            <h2>Settings</h2>
+            <div className="accordion">
+              <div className={`accordion-item ${expanded === 'budget' ? 'open' : ''}`}>
+                <button onClick={() => toggleAccordion('budget')}>Edit Monthly Budget and Reset Date</button>
+                <div className="accordion-content">
+                  {expanded === 'budget' && <BudgetForm userId={userId} />}
+                </div>
+              </div>
+              <div className="accordion-item">
+                <button onClick={() => toggleAccordion('statement')}>Monthly Statement</button>
+                {expanded === 'statement' && <p>Here is your monthly statement.</p>}
+              </div>
+              <div className={`accordion-item ${expanded === 'editName' ? 'open' : ''}`}>
+                <button onClick={() => toggleAccordion('editName')}>Edit Your Name</button>
+                <div className="accordion-content">
+                  {expanded === 'editName' && <EditNameForm userId={userId} onSave={handleSave} />}
+                </div>
+              </div>
+              <div className="accordion-item">
+                <button
+                  className="logout-button"
+                  onClick={() => {
+                    localStorage.removeItem('userId');
+                    navigate('/login');
+                  }}
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
+      {/* Expense Chart */}
+      <ExpenseChart data={chartData} onChartClick={handleChartClick} />
+
+      {/* Detalii pentru categoria selectată */}
       {selectedCategory && (
         <div className="expense-details">
           <h2>Details for {selectedCategory}</h2>

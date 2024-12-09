@@ -15,7 +15,6 @@ const Login = () => {
       setError('Username și parolă sunt necesare!');
       return;
     }
-
     setLoading(true);
     setError('');
 
@@ -32,15 +31,15 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Presupunem că API-ul returnează userId și un token
-        const { userId, token } = data;
+      
+        const { userId, token, fullName } = data;
 
         // Salvezi userId și token în localStorage
         localStorage.setItem('userId', userId);
         localStorage.setItem('token', token);
+        localStorage.setItem('fullName', fullName);
 
         console.log('Autentificare reușită:', userId);
-        // Redirecționează utilizatorul către pagina Home
         window.location.href = '/home'; // Redirecționare către pagina Home
       } else {
         setError(data.message || 'A apărut o eroare!');
