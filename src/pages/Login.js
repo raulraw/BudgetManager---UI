@@ -15,7 +15,6 @@ const Login = () => {
       setError('Username și parolă sunt necesare!');
       return;
     }
-
     setLoading(true);
     setError('');
 
@@ -33,11 +32,13 @@ const Login = () => {
 
       if (response.ok) {
       
-        const { userId, token } = data;
+
+        const { userId, token, fullName } = data;
 
         // Salvezi userId și token în localStorage
         localStorage.setItem('userId', userId);
         localStorage.setItem('token', token);
+        localStorage.setItem('fullName', fullName);
 
         console.log('Autentificare reușită:', userId);
         window.location.href = '/home'; // Redirecționare către pagina Home
