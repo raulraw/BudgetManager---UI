@@ -32,6 +32,7 @@ const Login = () => {
 
       if (response.ok) {
       
+
         const { userId, token, fullName } = data;
 
         // Salvezi userId și token în localStorage
