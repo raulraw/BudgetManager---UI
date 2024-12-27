@@ -23,6 +23,7 @@ const Home = () => {
   });
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [remainingExpenses, setRemainingExpenses] = useState(0);
 
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId');

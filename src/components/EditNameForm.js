@@ -17,8 +17,7 @@ const EditNameForm = ({ userId, onSave }) => {
       );
 
       if (response.status === 200) {
-        // Actualizăm localStorage
-        localStorage.setItem('fullName', newName);
+        
 
         // Alertează utilizatorul
         alert('Name updated successfully!');
