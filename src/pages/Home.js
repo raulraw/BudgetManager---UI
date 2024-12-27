@@ -12,6 +12,11 @@ const Home = () => {
   const [expanded, setExpanded] = useState(null);
   const [expenses, setExpenses] = useState({});
   const [fullName, setFullName] = useState(localStorage.getItem('fullName') || '');
+  const [budget, setBudget] = useState({
+    amount: 0,
+    remainingAmount: 0,
+    resetDay: 0,
+  });
   const [chartData, setChartData] = useState({
     labels: ['No Expenses'],
     datasets: [
@@ -23,10 +28,31 @@ const Home = () => {
   });
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [remainingExpenses, setRemainingExpenses] = useState(0);
+
+  // Funcția pentru calcularea următoarei date de reset
+  const [resetDay, setResetDay] = useState(0); // Adaugă un state pentru resetDay
+  const calculateNextResetDate = (resetDay) => {
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+
+    if (resetDay < 1 || resetDay > 31) return 'Invalid reset day';
+
+    const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1; // Dacă este decembrie, trecem la ianuarie
+    const nextYear = currentMonth === 11 ? currentYear + 1 : currentYear;
+
+    const nextResetDate = new Date(nextYear, nextMonth, resetDay);
+
+    return nextResetDate.toLocaleDateString('default', {
+      day: 'numeric',
+      month: 'long',
+    });
+  };
 
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
+  const currentMonth = new Date().toLocaleString('default', { month: 'long' });
+  
 
   useEffect(() => {
     if (!userId) {
@@ -37,17 +63,40 @@ const Home = () => {
         .then((response) => {
           if (response.data && Object.keys(response.data).length > 0) {
             const categories = response.data;
-            const labels = Object.keys(categories);
-
+            
+  
+            // Obține luna și anul curent
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+  
+            // Filtrează cheltuielile pentru luna curentă
+            const filteredCategories = Object.keys(categories).reduce((filtered, category) => {
+              const filteredExpenses = categories[category].filter((expense) => {
+                const expenseDate = new Date(expense.date);
+                return (
+                  expenseDate.getMonth() === currentMonth &&
+                  expenseDate.getFullYear() === currentYear
+                );
+              });
+  
+              if (filteredExpenses.length > 0) {
+                filtered[category] = filteredExpenses;
+              }
+  
+              return filtered;
+            }, {});
+  
+            const labels = Object.keys(filteredCategories);
+  
             const data = labels.map((category) =>
-              Array.isArray(categories[category])
-                ? categories[category].reduce((acc, expense) => acc + expense.amount, 0)
-                : categories[category] || 0
+              Array.isArray(filteredCategories[category])
+                ? filteredCategories[category].reduce((acc, expense) => acc + expense.amount, 0)
+                : 0
             );
-
+  
             const total = data.reduce((acc, val) => acc + val, 0);
             setTotalExpenses(total);
-
+  
             setChartData({
               labels: labels,
               datasets: [
@@ -57,7 +106,14 @@ const Home = () => {
                 },
               ],
             });
-            setExpenses(categories);
+  
+            setExpenses(filteredCategories);
+            if (budget.amount) {
+              setBudget((prevBudget) => ({
+                  ...prevBudget,
+                  remainingAmount: prevBudget.amount - total,
+              }));
+          }
           } else {
             setExpenses({});
             setTotalExpenses(0);
@@ -74,6 +130,29 @@ const Home = () => {
         })
         .catch((error) => {
           console.error('Error fetching expenses:', error);
+        });
+
+        // Preluarea bugetului
+        axios
+        .get(`http://localhost:8080/api/users/${userId}`)
+        .then((response) => {
+          const userData = response.data;
+  
+          // Setăm bugetul în starea componentei
+          if (userData.budget) {
+            const { amount, remainingAmount, resetDay } = userData.budget;
+            setBudget({
+              amount,
+              remainingAmount,
+              resetDay,
+            });
+      
+            // Actualizăm resetDay separat
+            setResetDay(resetDay);
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching user data:', error);
         });
     }
   }, [userId, navigate]);
@@ -97,12 +176,34 @@ const Home = () => {
     }
   };
 
+  
+
   return (
     <div className="home-container">
       <h1>
         Welcome, {fullName ? fullName : 'User'}
         <FaCog className="settings-icon" onClick={() => setShowSettings(true)} />
       </h1>
+      <h2>Here is your journey in {currentMonth}</h2> 
+
+      <div className="budget-overview">
+        <div>
+          <h3>Total Budget:</h3>
+          <p>{budget.amount ? budget.amount.toFixed(2) : 'Loading...'} $</p>
+        </div>
+        <div>
+          <h3>Remaining Budget:</h3>
+          <p>{budget.remainingAmount ? budget.remainingAmount.toFixed(2) : 'Loading...'} $</p>
+        </div>
+        <div>
+          <h3>Total Expenses:</h3>
+          <p>{totalExpenses ? totalExpenses.toFixed(2) : 'Loading...' } $</p>
+        </div>
+        <div>
+          <h3>Next Reset Day:</h3>
+          <p>{resetDay ? calculateNextResetDate(resetDay) : "Not set yet"}</p>
+        </div>
+      </div>
 
       {/* Meniu de setări */}
       {showSettings && (
@@ -116,7 +217,12 @@ const Home = () => {
               <div className={`accordion-item ${expanded === 'budget' ? 'open' : ''}`}>
                 <button onClick={() => toggleAccordion('budget')}>Edit Monthly Budget and Reset Date</button>
                 <div className="accordion-content">
-                  {expanded === 'budget' && <BudgetForm userId={userId} />}
+                  {expanded === 'budget' && <BudgetForm 
+    userId={userId} 
+    onSave={(updatedBudget) => setBudget(updatedBudget)} 
+    setBudget={setBudget}   
+    totalExpenses={totalExpenses}  
+/>}
                 </div>
               </div>
               <div className="accordion-item">
@@ -149,6 +255,7 @@ const Home = () => {
       <ExpenseChart data={chartData} onChartClick={handleChartClick} />
 
       {/* Detalii pentru categoria selectată */}
+      {/* Trebuie facut componenta pentru asta */}
       {selectedCategory && (
         <div className="expense-details">
           <h2>Details for {selectedCategory}</h2>
@@ -172,9 +279,6 @@ const Home = () => {
         </div>
       )}
 
-      <div className="total-expenses">
-        <p>Total Expenses: {totalExpenses.toFixed(2)} $</p>
-      </div>
     </div>
   );
 };
