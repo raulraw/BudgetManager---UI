@@ -1,83 +1,167 @@
-/* register.css */
-.register-container {
+/* Stiluri pentru pagina de înregistrare */
+.register-page-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  background: #f4f7fa;
+  height: 100vh;
+  background: linear-gradient(120deg, #2b3a42, #1d2d35, #3b4c56, #4f5b67); 
+  background-size: 400% 400%;
+  animation: backgroundShift 8s ease infinite;
+  overflow: hidden;
+}
+
+/* Animație pentru fundalul gradient */
+@keyframes backgroundShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.register-title {
+  color: #4FC3F7;
+  font-size: 3rem;
+  margin-bottom: 30px;
+  margin-right: 2rem;
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  animation: fadeIn 1s ease-out;
+}
+
+/* Animație pentru titlu */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.register-form {
+  background-color: rgba(51, 51, 51, 0.5); /* Fundal semi-transparent */
+  padding: 40px;
+  border-radius: 15px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  animation: slideUp 1s ease-out;
+  backdrop-filter: blur(10px); /* Efect de blur pe fundal */
+}
+
+/* Animație pentru formular */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.register-form-field {
+  margin-bottom: 20px;
+  animation: fadeIn 1.5s ease-out;
+}
+
+.register-label {
+  color: #fff;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  display: block;
+  font-family: 'Roboto', sans-serif;
+  letter-spacing: 1.5px;
+}
+
+.register-input {
+  width: 95%;
+  padding: 12px;
+  font-size: 1rem;
+  border: 2px solid #444;
+  border-radius: 15px;
+  background-color: #333;
+  color: #fff;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.register-input:focus {
+  border-color: #4FC3F7;
+  box-shadow: 0 0 8px rgba(37, 117, 252, 0.5);
+  outline: none;
+  transform: scale(1.05); /* Mărirea câmpului de input la focus */
+}
+
+.register-button {
+  padding: 12px;
+  font-size: 1.1rem;
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
   font-family: 'Roboto', sans-serif;
 }
 
-h2 {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-  color: #333;
+.register-button:disabled {
+  background-color: #666;
+  cursor: not-allowed;
 }
 
-form {
-  background: #fff;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
+.register-button:hover:not(:disabled) {
+  background-color: #4FC3F7;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 117, 252, 0.2);
 }
 
-div {
-  margin-bottom: 1rem;
+.register-button:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
 }
 
-label {
-  font-size: 1.2rem;
-  color: #555;
-  display: block;
-  margin-bottom: 0.5rem;
+/* Responsivitate */
+@media (max-width: 480px) {
+  .register-title {
+    font-size: 2rem;
+  }
+
+  .register-form {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .register-input, .register-button {
+    font-size: 1rem;
+  }
 }
 
-input {
-  width: 100%;
-  padding: 0.8rem;
-  font-size: 1rem;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-  box-sizing: border-box;
-  transition: border-color 0.3s ease;
+.login-link {
+  margin-top: 20px;
+  text-align: center;
 }
 
-input:focus {
-  border-color: #4a90e2;
-  outline: none;
-}
-
-button {
-  background: #4a90e2;
+.login-link p {
+  letter-spacing: 1px;
   color: white;
-  border: none;
-  padding: 1rem;
-  width: 100%;
-  font-size: 1.1rem;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s ease;
 }
 
-button:hover {
-  background: #357ab7;
+.link-login {
+  color: #f23333;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
 }
 
-.error {
-  color: #ff4c4c;
-  font-size: 1rem;
-  margin-top: 0.5rem;
-  text-align: center;
-}
-
-form > div:last-child {
-  margin-bottom: 2rem;
-}
-
-p {
-  font-size: 1rem;
-  color: #555;
-  text-align: center;
+.link-login:hover {
+  color: #4FC3F7;
 }
