@@ -203,16 +203,54 @@ const Home = () => {
   };
   
   const handleDeleteExpense = (expenseId) => {
-    // Logică pentru ștergerea cheltuielii
-    console.log('Deleting expense with ID:', expenseId);
-    // Actualizează starea cheltuielilor, eliminând cheltuiala cu ID-ul respectiv
-    setExpenses((prevExpenses) => {
-      const updatedExpenses = { ...prevExpenses };
-      Object.keys(updatedExpenses).forEach((category) => {
-        updatedExpenses[category] = updatedExpenses[category].filter(expense => expense.id !== expenseId);
+    axios
+      .delete(`http://localhost:8080/api/expenses/user/${userId}/${expenseId}`)
+      .then(() => {
+        console.log('Expense deleted successfully.');
+  
+        // Actualizează cheltuielile locale
+        setExpenses((prevExpenses) => {
+          const updatedExpenses = { ...prevExpenses };
+          Object.keys(updatedExpenses).forEach((category) => {
+            updatedExpenses[category] = updatedExpenses[category].filter(
+              (expense) => expense.id !== expenseId
+            );
+          });
+          return updatedExpenses;
+        });
+  
+        // Recalculează totalul cheltuielilor
+        const updatedTotalExpenses = totalExpenses - expenses[selectedCategory]?.find(expense => expense.id === expenseId)?.amount || 0;
+        setTotalExpenses(updatedTotalExpenses);
+  
+        // Actualizează bugetul rămas
+        setBudget((prevBudget) => ({
+          ...prevBudget,
+          remainingAmount: prevBudget.amount - updatedTotalExpenses,
+        }));
+  
+        // Actualizează graficul
+        setChartData((prevChartData) => {
+          const updatedChartData = { ...prevChartData };
+          const categoryIndex = updatedChartData.labels.indexOf(selectedCategory);
+  
+          if (categoryIndex !== -1) {
+            const expenseAmount = expenses[selectedCategory]?.find(expense => expense.id === expenseId)?.amount || 0;
+            updatedChartData.datasets[0].data[categoryIndex] -= expenseAmount;
+  
+            // Dacă categoria nu mai are cheltuieli, elimin-o din grafic
+            if (updatedChartData.datasets[0].data[categoryIndex] <= 0) {
+              updatedChartData.labels.splice(categoryIndex, 1);
+              updatedChartData.datasets[0].data.splice(categoryIndex, 1);
+            }
+          }
+  
+          return updatedChartData;
+        });
+      })
+      .catch((error) => {
+        console.error('Error deleting expense:', error);
       });
-      return updatedExpenses;
-    });
   };
 
   
@@ -304,7 +342,9 @@ const Home = () => {
         {/* Container pentru butoane (Edit/Delete) */}
         <div className="expense-actions">
           <button className="edit-btn" onClick={() => handleEditExpense(expense)}>Edit</button>
-          <button className="delete-btn" onClick={() => handleDeleteExpense(expense.id)}>Delete</button>
+          <button className="delete-btn" onClick={() => handleDeleteExpense(expense.id)}>
+            Delete
+          </button>
         </div>
       </div>
     </div>
