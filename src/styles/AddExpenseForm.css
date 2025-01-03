@@ -1,0 +1,255 @@
+/* -----------------------------------------------
+   Secțiunea pentru butonul de adăugare cheltuieli
+------------------------------------------------- */
+
+/* Buton pentru deschiderea formularului */
+.add-expense-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background-color: #f23333;
+  color: white;
+  border-radius: 50%;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.3); 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1001;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.add-expense-button:hover {
+  transform: scale(1.15);
+  box-shadow: 0px 12px 25px rgba(0, 0, 0, 0.4);
+  background-color: #4FC3F7;
+}
+
+/* Iconița de plus */
+.add-expense-plus-icon {
+  font-size: 30px;
+  font-weight: bold;
+  text-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, text-shadow 0.2s ease;
+}
+
+.add-expense-button:hover .add-expense-plus-icon {
+  transform: rotate(180deg);
+  text-shadow: 0px 6px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* -----------------------------------------------
+   Secțiunea pentru overlay-ul formularului
+------------------------------------------------- */
+
+/* Overlay-ul pentru formular */
+.add-expense-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Fond întunecat pentru overlay */
+  z-index: 1000;
+  display: none;
+}
+
+.add-expense-overlay.visible {
+  display: block;
+}
+
+/* -----------------------------------------------
+   Secțiunea pentru formularul de adăugare cheltuieli
+------------------------------------------------- */
+
+/* Formularul de adăugare cheltuieli */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* Afișează formularul */
+.modal-overlay.visible {
+  display: flex;
+}
+
+/* Animație pentru deschiderea formularului */
+.modal-overlay.visible form {
+  animation: slideUp 0.4s ease-out;
+}
+
+/* Animație pentru închiderea formularului */
+.modal-overlay.fade-out {
+  animation: slideDown 0.4s forwards;
+}
+
+/* Formularul în sine */
+form {
+  width: 100%;
+  max-width: 450px;
+  padding: 30px;
+  background-color: rgba(51, 51, 51, 0.9);
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  font-family: Arial, sans-serif;
+  transition: transform 0.3s ease-out;
+}
+
+/* -----------------------------------------------
+   Secțiunea pentru animațiile de deschidere/închidere
+------------------------------------------------- */
+
+/* Animație de deschidere */
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Animație de închidere */
+@keyframes slideDown {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+}
+
+/* Animațiile de fade-in și fade-out pentru succes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* -----------------------------------------------
+   Secțiunea pentru popup-ul de succes
+------------------------------------------------- */
+
+/* Popup de succes */
+.add-expense-success-popup {
+  position: fixed;
+  top: 10%;
+  right: 10%;
+  background-color: #4CAF50;;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15);
+  z-index: 1002;
+  font-size: 16px;
+  animation: fadeIn 0.5s ease, fadeOut 0.5s ease 2.5s;
+}
+
+/* -----------------------------------------------
+   Secțiunea pentru inputuri și butoane din formular
+------------------------------------------------- */
+
+/* Inputuri */
+.add-expense-form-input,
+.add-expense-form-select,
+.add-expense-form-textarea {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  padding: 15px;
+  border: 1px solid #bdb4b4;
+  border-radius: 15px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.add-expense-form-input:focus,
+.add-expense-form-select:focus,
+.add-expense-form-textarea:focus {
+  border-color: #4FC3F7;
+  outline: none;
+}
+
+/* Select */
+.add-expense-form-select {
+  appearance: none;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.add-expense-form-select option:hover {
+  background-color: #4CAF50; 
+  color: blue;
+}
+
+/* Stilizarea opțiunii selectate */
+.add-expense-form-select option:checked {
+  background-color: #f23333;  
+  color: white;  
+}
+
+/* Textarea */
+.add-expense-form-textarea {
+  resize: none;
+  height: 80px;
+}
+
+/* Butoane */
+.add-expense-form-button {
+  display: inline-block;
+  width: 48%;
+  padding: 10px;
+  font-size: 1em;
+  font-weight: bold;
+  color: white;
+  background-color: #4FC3F7;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.add-expense-form-button:hover {
+  background-color: #f23333;
+}
+
+/* Mesaj de eroare */
+.add-expense-error-message {
+  color: #f23333;
+  font-size: 0.9em;
+  text-align: center;
+  margin-top: 15px;
+}

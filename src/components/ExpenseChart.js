@@ -39,7 +39,7 @@ const ExpenseChart = ({ data, onChartClick }) => {
           plugins: {
             tooltip: {
               callbacks: {
-                label: (context) => `${context.label}: ${context.raw.toFixed(2)} $`,
+                label: (context) => `${context.label}: $${context.raw.toFixed(2)}`,
               },
             },
           },

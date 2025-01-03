@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import '../styles/Login.css';
 
 const Login = () => {
@@ -12,7 +13,7 @@ const Login = () => {
 
     // Validare simplă
     if (!username || !password) {
-      setError('Username și parolă sunt necesare!');
+      setError('Username and password are needed!');
       return;
     }
     setLoading(true);
@@ -31,8 +32,6 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-      
-
         const { userId, token, fullName } = data;
 
         // Salvezi userId și token în localStorage
@@ -53,32 +52,37 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container">
-      <h2>Autentificare</h2>
-      <form onSubmit={handleLogin}>
-        <div>
-          <label htmlFor="username">Username</label>
+    <div className="login-page-container">
+      <h2 className="login-title">"Budget wisely, live fully."</h2>
+      <form className="login-form" onSubmit={handleLogin}>
+        <div className="login-form-field">
+          <label htmlFor="username" className="login-label">Username</label>
           <input
             type="text"
             id="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
+            className="login-input"
           />
         </div>
-        <div>
-          <label htmlFor="password">Parolă</label>
+        <div className="login-form-field">
+          <label htmlFor="password" className="login-label">Password</label>
           <input
             type="password"
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            className="login-input"
           />
         </div>
-        {error && <p className="error">{error}</p>}
-        <button type="submit" disabled={loading}>
-          {loading ? 'Autentificare...' : 'Autentificare'}
+        <div className="register-link">
+          <p>Don't have an account? <Link to="/register" className="link-register">Create one here</Link></p>
+        </div>
+        {error && <p className="login-error">{error}</p>}
+        <button type="submit" disabled={loading} className="login-button">
+          {loading ? 'Log In...' : 'Log In'}
         </button>
       </form>
     </div>

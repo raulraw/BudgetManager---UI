@@ -5,7 +5,8 @@ import { FaCog } from 'react-icons/fa';
 import '../styles/Home.css';
 import BudgetForm from '../components/BudgetForm';
 import EditNameForm from '../components/EditNameForm';
-import ExpenseChart from '../components/ExpenseChart'; // Importăm noua componentă pentru grafic
+import ExpenseChart from '../components/ExpenseChart';
+import AddExpenseForm from '../components/AddExpenseForm';
 
 const Home = () => {
   const [showSettings, setShowSettings] = useState(false);
@@ -157,9 +158,13 @@ const Home = () => {
     }
   }, [userId, navigate]);
 
-  const toggleAccordion = (section) => {
-    setExpanded(expanded === section ? null : section);
+
+
+
+  const toggleAccordion = (id) => {
+    setExpanded(prevExpanded => prevExpanded === id ? null : id);
   };
+
 
   const handleSave = (updatedName) => {
     console.log('Updated user name:', updatedName);
@@ -169,11 +174,45 @@ const Home = () => {
     setExpanded(null);
   };
 
+
   const handleChartClick = (clickedCategory) => {
     console.log('Category clicked:', clickedCategory);
     if (clickedCategory && expenses[clickedCategory]) {
       setSelectedCategory(clickedCategory);
     }
+  };
+
+
+  const closeSettings = () => {
+    const modal = document.querySelector('.settings-modal');
+    const content = document.querySelector('.settings-content');
+  
+    modal.classList.add('fade-out');
+    content.classList.add('fade-out');
+  
+    setTimeout(() => {
+      setShowSettings(false); 
+      document.body.classList.remove('modal-open'); 
+    }, 400); 
+  };
+
+  const handleEditExpense = (expense) => {
+    // Logică pentru editarea cheltuielii
+    console.log('Editing expense:', expense);
+    // Poți deschide un formular pentru editare sau modifica direct
+  };
+  
+  const handleDeleteExpense = (expenseId) => {
+    // Logică pentru ștergerea cheltuielii
+    console.log('Deleting expense with ID:', expenseId);
+    // Actualizează starea cheltuielilor, eliminând cheltuiala cu ID-ul respectiv
+    setExpenses((prevExpenses) => {
+      const updatedExpenses = { ...prevExpenses };
+      Object.keys(updatedExpenses).forEach((category) => {
+        updatedExpenses[category] = updatedExpenses[category].filter(expense => expense.id !== expenseId);
+      });
+      return updatedExpenses;
+    });
   };
 
   
@@ -189,15 +228,15 @@ const Home = () => {
       <div className="budget-overview">
         <div>
           <h3>Total Budget:</h3>
-          <p>{budget.amount ? budget.amount.toFixed(2) : 'Loading...'} $</p>
+          <p>${budget.amount ? budget.amount.toFixed(2) : 'Loading...'}</p>
         </div>
         <div>
           <h3>Remaining Budget:</h3>
-          <p>{budget.remainingAmount ? budget.remainingAmount.toFixed(2) : 'Loading...'} $</p>
+          <p>${budget.remainingAmount ? budget.remainingAmount.toFixed(2) : 'Loading...'}</p>
         </div>
         <div>
           <h3>Total Expenses:</h3>
-          <p>{totalExpenses ? totalExpenses.toFixed(2) : 'Loading...' } $</p>
+          <p>${totalExpenses ? totalExpenses.toFixed(2) : 'Loading...' }</p>
         </div>
         <div>
           <h3>Next Reset Day:</h3>
@@ -207,79 +246,120 @@ const Home = () => {
 
       {/* Meniu de setări */}
       {showSettings && (
-        <div className="settings-modal">
-          <div className="settings-content">
-            <span className="close-icon" onClick={() => setShowSettings(false)}>
-              &times;
-            </span>
-            <h2>Settings</h2>
-            <div className="accordion">
-              <div className={`accordion-item ${expanded === 'budget' ? 'open' : ''}`}>
-                <button onClick={() => toggleAccordion('budget')}>Edit Monthly Budget and Reset Date</button>
-                <div className="accordion-content">
-                  {expanded === 'budget' && <BudgetForm 
-    userId={userId} 
-    onSave={(updatedBudget) => setBudget(updatedBudget)} 
-    setBudget={setBudget}   
-    totalExpenses={totalExpenses}  
-/>}
-                </div>
-              </div>
-              <div className="accordion-item">
-                <button onClick={() => toggleAccordion('statement')}>Monthly Statement</button>
-                {expanded === 'statement' && <p>Here is your monthly statement.</p>}
-              </div>
-              <div className={`accordion-item ${expanded === 'editName' ? 'open' : ''}`}>
-                <button onClick={() => toggleAccordion('editName')}>Edit Your Name</button>
-                <div className="accordion-content">
-                  {expanded === 'editName' && <EditNameForm userId={userId} onSave={handleSave} />}
-                </div>
-              </div>
-              <div className="accordion-item">
-                <button
-                  className="logout-button"
-                  onClick={() => {
-                    localStorage.removeItem('userId');
-                    navigate('/login');
-                  }}
-                >
-                  Logout
-                </button>
-              </div>
+    <div className="settings-modal">
+      <div className="settings-content">
+        <span className="close-icon" onClick={closeSettings}>
+          &times;
+        </span>
+        <h2>Settings</h2>
+        <div className="accordion">
+          <div className={`accordion-item ${expanded === 'budget' ? 'open' : ''}`}>
+            <button onClick={() => toggleAccordion('budget')}>Edit Monthly Budget and Reset Date</button>
+            <div className="accordion-content">
+              {expanded === 'budget' && <BudgetForm userId={userId} onSave={updatedBudget => setBudget(updatedBudget)} />}
             </div>
           </div>
+          <div className="accordion-item">
+            <button onClick={() => toggleAccordion('statement')}>Monthly Statement</button>
+            {expanded === 'statement' && <p>Here is your monthly statement.</p>}
+          </div>
+          <div className={`accordion-item ${expanded === 'editName' ? 'open' : ''}`}>
+            <button onClick={() => toggleAccordion('editName')}>Edit Your Name</button>
+            <div className="accordion-content">
+              {expanded === 'editName' && <EditNameForm userId={userId} onSave={handleSave} />}
+            </div>
+          </div>
+          <div className="accordion-item">
+            <button
+              className="logout-button"
+              onClick={() => {
+                localStorage.removeItem('userId');
+                navigate('/login');
+              }}
+            >
+              Logout
+            </button>
+          </div>
         </div>
-      )}
+      </div>
+    </div>
+  )}
 
       {/* Expense Chart */}
       <ExpenseChart data={chartData} onChartClick={handleChartClick} />
-
-      {/* Detalii pentru categoria selectată */}
-      {/* Trebuie facut componenta pentru asta */}
       {selectedCategory && (
-        <div className="expense-details">
-          <h2>Details for {selectedCategory}</h2>
-          {expenses[selectedCategory]?.length > 0 ? (
-            expenses[selectedCategory].map((expense, index) => (
-              <div key={index} className="expense-item">
-                <p>
-                  <strong>Name:</strong> {expense.name}
-                </p>
-                <p>
-                  <strong>Date:</strong> {new Date(expense.date).toLocaleDateString()}
-                </p>
-                <p>
-                  <strong>Amount:</strong> {expense.amount.toFixed(2)} $
-                </p>
-              </div>
-            ))
-          ) : (
-            <p>No expenses found in this category.</p>
-          )}
+  <div className="expense-details">
+    <h2>Details for {selectedCategory}</h2>
+    {expenses[selectedCategory]?.length > 0 ? (
+  expenses[selectedCategory].map((expense, index) => (
+    <div key={index} className="expense-item">
+      {/* Container pentru detalii */}
+      <div className="expense-details-container">
+        <div className="expense-info">
+          <p><strong>Name:</strong> {expense.name}</p>
+          <p><strong>Date:</strong> {new Date(expense.date).toLocaleDateString()}</p>
+          <p><strong>Amount:</strong> {expense.amount.toFixed(2)} $</p>
         </div>
-      )}
-
+        
+        {/* Container pentru butoane (Edit/Delete) */}
+        <div className="expense-actions">
+          <button className="edit-btn" onClick={() => handleEditExpense(expense)}>Edit</button>
+          <button className="delete-btn" onClick={() => handleDeleteExpense(expense.id)}>Delete</button>
+        </div>
+      </div>
     </div>
+  ))
+) : (
+  <p>No expenses found in this category.</p>
+)}
+  </div>
+)}
+
+
+{/* Adăugare de cheltuieli */}
+      
+            <AddExpenseForm
+            userId={userId}
+            onSave={(newExpense) => {
+              setExpenses((prevExpenses) => {
+                const updatedExpenses = { ...prevExpenses };
+                const category = newExpense.category;
+            
+                if (!updatedExpenses[category]) {
+                  updatedExpenses[category] = [];
+                }
+            
+                updatedExpenses[category].push(newExpense);
+                return updatedExpenses;
+              });
+            
+              // Actualizează graficul
+              setChartData((prevChartData) => {
+                const updatedChartData = { ...prevChartData }; // Copie a datelor grafice
+                const categoryIndex = updatedChartData.labels.indexOf(newExpense.category);
+            
+                if (categoryIndex !== -1) {
+                  updatedChartData.datasets[0].data[categoryIndex] += newExpense.amount;
+                } else {
+                  updatedChartData.labels.push(newExpense.category);
+                  updatedChartData.datasets[0].data.push(newExpense.amount);
+                }
+            
+                return updatedChartData; // Actualizare corectă a stării
+              });
+            
+              // Actualizează totalul cheltuielilor
+              setTotalExpenses((prevTotal) => prevTotal + newExpense.amount);
+            
+              // Ajustează bugetul rămas
+              setBudget((prevBudget) => ({
+                ...prevBudget,
+                remainingAmount: prevBudget.amount - (totalExpenses + newExpense.amount),
+              }));
+            }}
+          />
+      </div>
+
   );
 };
 
