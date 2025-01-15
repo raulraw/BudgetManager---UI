@@ -1,0 +1,152 @@
+/* -----------------------------------------------
+   Secțiunea pentru overlay-ul formularului
+------------------------------------------------- */
+
+/* Overlay-ul pentru formular */
+.edit-expense-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Fond întunecat pentru overlay */
+  z-index: 1002;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* -----------------------------------------------
+   Secțiunea pentru formularul de editare cheltuieli
+------------------------------------------------- */
+
+/* Formularul în sine */
+.edit-expense-form {
+  width: 100%;
+  max-width: 450px;
+  padding: 30px;
+  background-color: rgba(51, 51, 51, 0.9);
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  font-family: Arial, sans-serif;
+  transition: transform 0.3s ease-out;
+  animation: slideUp 0.4s ease-out;
+  position: fixed;
+}
+
+/* Animație pentru deschiderea formularului */
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* -----------------------------------------------
+   Secțiunea pentru inputuri și butoane din formular
+------------------------------------------------- */
+
+/* Inputuri */
+.edit-expense-input,
+.edit-expense-select,
+.edit-expense-textarea {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  padding: 15px;
+  border: 1px solid #bdb4b4;
+  border-radius: 15px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.edit-expense-input:focus,
+.edit-expense-select:focus,
+.edit-expense-textarea:focus {
+  border-color: #4FC3F7;
+  outline: none;
+}
+
+/* Select */
+.edit-expense-select {
+  appearance: none;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.edit-expense-select option:hover {
+  background-color: #4CAF50;
+  color: blue;
+}
+
+/* Stilizarea opțiunii selectate */
+.edit-expense-select option:checked {
+  background-color: #f23333;
+  color: white;
+}
+
+/* Textarea */
+.edit-expense-textarea {
+  resize: none;
+  height: 80px;
+}
+
+/* Butoane */
+.edit-expense-button {
+  display: inline-block;
+  justify-content: space-between;
+  width: 40%;
+  height: auto;
+  padding: 10px;
+  font-size: 1em;
+  font-weight: bold;
+  color: white;
+  background-color: #4FC3F7;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-right: 15px; 
+}
+
+.edit-expense-cancel-button {
+  display: inline-block;
+  justify-content: space-between;
+  width: 40%;
+  height: auto;
+  padding: 10px;
+  font-size: 1em;
+  font-weight: bold;
+  color: white;
+  background-color: #4FC3F7;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.edit-expense-button:hover {
+  background-color: #4CAF50;
+}
+
+.edit-expense-cancel-button {
+  background-color: #f23333;
+}
+
+.edit-expense-cancel-button:hover {
+  background-color: #4FC3F7;
+}
+
+/* Mesaj de eroare */
+.edit-expense-error-message {
+  color: #f23333;
+  font-size: 0.9em;
+  text-align: center;
+  margin-top: 15px;
+}

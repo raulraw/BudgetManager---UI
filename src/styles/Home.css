@@ -560,3 +560,4 @@
   .expense-item .delete-btn:hover, .expense-item .edit-btn:hover {
     transform: translateX(5px);  /* Mișcare ușoară spre dreapta la hover */
   }
+
