@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import "../styles/AddExpenseForm.css";
 
-function AddExpenseForm({ userId, onSave }) {
+function AddExpenseForm({ userId, onSave,fetchChartData,fetchBudget }) {
   const [formData, setFormData] = useState({
     amount: "",
     category: "",
@@ -47,11 +47,12 @@ function AddExpenseForm({ userId, onSave }) {
       const newExpense = response.data;
       newExpense.description = newExpense.name; // Mapează name pe description pentru afișare
       onSave(newExpense);
-
+      
       // Resetează formularul și închide imediat
       setFormData({ amount: "", category: "", description: "", date: "" });
       setMessage("");
       setSuccessMessage("Your expense has been added successfully!");
+      await fetchChartData();
       setIsFormVisible(false); // Închide formularul direct
     } catch (error) {
       console.error("Error adding expense:", error);

@@ -1,0 +1,84 @@
+/* Stil general pentru componentă */
+.monthly-statement {
+  max-width: 500px;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+}
+
+/* Titlu */
+.monthly-statement h3 {
+  margin-bottom: 15px;
+  color: black;
+  text-align: center;
+}
+
+/* Multi-Select Container */
+.multi-select {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+/* Item din Multi-Select */
+.multi-select-item {
+  padding: 10px 15px;
+  font-size: 14px;
+  border: 1px solid #4FC3F7;
+  border-radius: 10px;
+  background-color: #4FC3F7;
+  color: black;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Hover pe item */
+.multi-select-item:hover {
+  background-color: #4CAF50;
+  color: #fff;
+  border-color: #4CAF50;
+}
+
+/* Item selectat */
+.multi-select-item.selected {
+  background-color: #4CAF50;
+  color: #fff;
+  border-color: #4CAF50;
+}
+
+/* Buton Get Statement */
+.get-statement-download-btn {
+  width: 100%;
+  padding: 10px 15px;
+  font-size: 16px;
+  color: #fff !important;
+  background-color: #4CAF50 !important; 
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Hover pe buton */
+.get-statement-download-btn:hover {
+  background-color: #4FC3F7 !important;
+  color: white;
+}
+
+/* Buton dezactivat */
+.get-statement-download-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Responsivitate */
+@media (max-width: 600px) {
+  .multi-select-item {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+
+  .get-statement-download-btn {
+    font-size: 14px;
+  }
+}
